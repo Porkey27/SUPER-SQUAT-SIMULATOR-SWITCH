@@ -91,14 +91,3 @@ source/
   thread also uses. Worst case is a slightly stale squat count or a one-off gate value
   for a single 6.4 s loop — purely cosmetic, never a crash. The SFX voice pool is
   mutex-guarded; music `base`/`gate` are lock-free floats.
-
-## Validation
-
-The portable game logic (`gm.c`, `gm_object.c`, `objects.c`) was compiled clean under
-`gcc -std=c11 -Wall -Wextra` against host stubs and run for 40k steps: the squat mechanic,
-alarm debounce, ascension at 250 (rainbow mode + 25 background shapes), message/flash
-spawning and reaping, and the music roll all behave. The platform layer
-(`main.c`, `gm_gl.c`, `gm_assets.c`, `gm_audio.c`) follows the official switch-examples
-conventions (EGL/GL init from the `lenny` example, audout + threaded mixer, modern pad
-input) but must be compiled with the devkitPro toolchain on your machine — it can't be
-built in this environment.
