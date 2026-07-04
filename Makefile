@@ -18,7 +18,7 @@ INCLUDES	:=	source
 ROMFS		:=	romfs
 
 APP_TITLE	:=	Super Squat Simulator
-APP_AUTHOR	:=	Nik Sudan (Switch port)
+APP_AUTHOR	:=	Porkey27
 APP_VERSION	:=	1.0.0
 
 #---------------------------------------------------------------------------------
