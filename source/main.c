@@ -16,6 +16,29 @@ static EGLDisplay s_display = EGL_NO_DISPLAY;
 static EGLContext s_context = EGL_NO_CONTEXT;
 static EGLSurface s_surface = EGL_NO_SURFACE;
 
+// Adapted from devkitPro's own switch-examples (graphics/text_i18n).
+// Must be called before stdout is ever freopen'd elsewhere -- consoleInit
+// doesn't reliably reclaim stdout once something else has redirected it.
+#include <stdarg.h>
+__attribute__((format(printf, 1, 2)))
+static int error_screen(const char* fmt, ...)
+{
+    consoleInit(NULL);
+    va_list va;
+    va_start(va, fmt);
+    vprintf(fmt, va);
+    va_end(va);
+    printf("\nPress + to exit\n");
+    PadState pad; padConfigureInput(1, HidNpadStyleSet_NpadStandard); padInitializeDefault(&pad);
+    while (appletMainLoop()) {
+        padUpdate(&pad);
+        if (padGetButtonsDown(&pad) & HidNpadButton_Plus) break;
+        consoleUpdate(NULL);
+    }
+    consoleExit(NULL);
+    return EXIT_FAILURE;
+}
+
 static bool initEgl(NWindow* win)
 {
     s_display = eglGetDisplay(EGL_DEFAULT_DISPLAY);
@@ -76,13 +99,23 @@ bool gm_key_pressed(int vk)
 int main(int argc, char** argv)
 {
     (void)argc; (void)argv;
-    romfsInit();
+
+    // Must run before stdout is redirected anywhere (see error_screen()).
+    extern int gm_assets_check_source(void);
+    if (!gm_assets_check_source()) {
+        return error_screen(
+            "Super Squat Simulator not found!\n\n"
+            "Place your own copy at:\n"
+            "sdmc:/switch/SuperSquatSim/SSS.exe\n\n"
+            "Free download:\n"
+            "gamejolt.com/games/super-squat-simulator/11729\n");
+    }
 
     freopen("sdmc:/SuperSquatSim_log.txt", "w", stdout);
     setvbuf(stdout, NULL, _IONBF, 0);   // unbuffered so we see output even if it later hangs/crashes
     printf("=== boot ===\n");
 
-    if (!initEgl(nwindowGetDefault())) { printf("initEgl FAILED\n"); romfsExit(); return EXIT_FAILURE; }
+    if (!initEgl(nwindowGetDefault())) { printf("initEgl FAILED\n"); return EXIT_FAILURE; }
     printf("egl ok, display=%p surface=%p context=%p\n", (void*)s_display, (void*)s_surface, (void*)s_context);
 
     int gladok = gladLoadGL();
@@ -150,6 +183,5 @@ int main(int argc, char** argv)
 
     gm_audio_exit();
     deinitEgl();
-    romfsExit();
     return 0;
 }

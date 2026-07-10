@@ -278,26 +278,31 @@ static void player_draw(GMObject* o)
     draw_set_alpha(o->image_alpha);
     draw_set_color(PL(o).a==0 ? C_WHITE : gm_make_color_hsv(PL(o).n,255,200));
 
+    draw_set_depth3d(3.0f);   // backdrop: recedes furthest into the screen
     gmgl_set_projection(0);
     gmgl_rectangle(view_xview,view_yview,view_wview,view_hview, draw_color,draw_alpha,BM_NORMAL);
     gmgl_sprite_stretched(&spr_Gradient,0, view_xview,view_yview,view_wview,view_hview,
                           C_WHITE,draw_alpha,BM_ADD);
     gmgl_set_projection(view_angle);
 
+    draw_set_depth3d(1.5f);   // swirl rings: mid-layer, between backdrop and player
     for(int s=0;s<8;s++)
         gmgl_sprite_ext(&spr_Swirl,0,o->x,o->y,2,2, PL(o).n*3+s*45, C_WHITE, PL(o).a*o->image_alpha, BM_NORMAL);
     GMColor hsv = gm_make_color_hsv(127+PL(o).n,255,255);
     for(int s=0;s<8;s++)
         gmgl_sprite_ext(&spr_Swirl,0,o->x,o->y,2,2, PL(o).n*6+s*45, hsv, PL(o).a*o->image_alpha, BM_NORMAL);
 
+    draw_set_depth3d(-0.5f);  // player: pulled slightly toward the viewer
     PL(o).wob = (PL(o).a==0) ? 0 : 1.5f + gm_sin(PL(o).n/5.0f)/4.0f;
     gmgl_sprite_ext(&spr_Player,(int)PL(o).squatPhase,o->x,o->y,
                     PL(o).scale+PL(o).wob, PL(o).scale+PL(o).wob, o->image_angle, C_WHITE, o->image_alpha, BM_NORMAL);
 
     if(PL(o).tutMsg && PL(o).squatCount==0 && PL(o).squatPhase==0){
+        draw_set_depth3d(-0.5f);
         draw_set_color(C_BLACK); draw_set_halign(FA_CENTER); draw_set_valign(FA_TOP);
         gmgl_text_transformed(&spr_Font, o->x, o->y-200, "SQUAT!", 4,4,0);
     }
+    draw_set_depth3d(0.0f);
 }
 const GMType obj_Player_type = { "obj_Player",0, player_create, player_step, player_draw, player_alarm, NULL,NULL,NULL,NULL };
 
@@ -325,6 +330,7 @@ static void control_draw(GMObject* o)
     GMObject* p = gmo_first(&obj_Player_type);
     float playerA = p ? p->u.player.a : 0;
 
+    draw_set_depth3d(0.0f);   // HUD text sits at the screen plane, never popped/receded
     draw_set_alpha(1);
     gmgl_set_projection(0);
     if(playerA==1) CT(o).hud = gm_make_color_hsv(gm_random(255),255,255);

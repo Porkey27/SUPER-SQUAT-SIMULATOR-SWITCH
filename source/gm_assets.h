@@ -1,13 +1,22 @@
-// Asset registry: sprites (strip-sliced GL textures) and sound ids.
-// Header stays platform-free (tex is a uint32_t GL name) so game logic compiles
-// without GL headers.
+// Asset registry: sprites (strip-sliced textures) and sound ids.
+// Game-logic files (gm_object.c/objects.c) only ever pass GMSprite* through
+// to gmgl_*, they never touch the texture handle fields directly, so each
+// platform backend is free to stash whatever it needs here behind #ifdef.
 #pragma once
 #include <stdint.h>
+#if defined(__3DS__)
+#include <citro3d.h>
+#endif
 #include "gm.h"
 
 typedef struct {
-    uint32_t tex;                 // GL texture name
-    int texW, texH;
+#if defined(__3DS__)
+    C3D_Tex tex3ds;                // GPU texture object (owns its own linear-mem alloc)
+    int texPW, texPH;              // padded power-of-two dims backing tex3ds
+#else
+    uint32_t tex;                  // GL texture name
+#endif
+    int texW, texH;                // *actual* content pixel dims (used for UV math below)
     int frameW, frameH, frames;
     float originX, originY;       // pivot in px (y-down)
 } GMSprite;

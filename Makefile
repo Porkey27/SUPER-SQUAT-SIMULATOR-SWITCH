@@ -15,7 +15,7 @@ BUILD		:=	build
 SOURCES		:=	source
 DATA		:=	data
 INCLUDES	:=	source
-ROMFS		:=	romfs
+ROMFS		:=
 
 APP_TITLE	:=	Super Squat Simulator
 APP_AUTHOR	:=	Porkey27
@@ -37,7 +37,7 @@ ASFLAGS	:=	-g $(ARCH)
 LDFLAGS	=	-specs=$(DEVKITPRO)/libnx/switch.specs -g $(ARCH) -Wl,-Map,$(notdir $*.map)
 
 # switch-mesa (OpenGL via EGL) + switch-glad loader + libnx + math
-LIBS	:= -lglad -lEGL -lstdc++ -lglapi -ldrm_nouveau -lnx -lm
+LIBS	:= -lglad -lEGL -lstdc++ -lglapi -ldrm_nouveau -lnx -lz -lm
 
 #---------------------------------------------------------------------------------
 LIBDIRS	:= $(PORTLIBS) $(LIBNX)

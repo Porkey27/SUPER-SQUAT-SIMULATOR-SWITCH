@@ -9,6 +9,7 @@ float view_angle = 0.0f;
 float   draw_alpha = 1.0f;
 GMColor draw_color = {1,1,1,1};
 int     draw_blend = BM_NORMAL, draw_halign = FA_LEFT, draw_valign = FA_TOP;
+float   draw_depth3d = 0.0f;
 
 // ---- xorshift128 PRNG -------------------------------------------------
 static uint32_t s0=0x9e3779b9u, s1=0x243f6a88u, s2=0xb7e15162u, s3=0xdeadbeefu;

@@ -25,6 +25,13 @@ extern float   draw_alpha;
 extern GMColor draw_color;
 extern int     draw_blend, draw_halign, draw_valign;
 
+// Stereoscopic "3D" layering hint, read only by backends that support it
+// (e.g. the 3DS renderer). Roughly: 0 = screen plane, positive = recede
+// into the distance, negative = pop toward the viewer. GL/Switch backend
+// ignores this entirely, so it's safe on every platform.
+extern float draw_depth3d;
+static inline void draw_set_depth3d(float d){ draw_depth3d = d; }
+
 static const GMColor C_WHITE = {1,1,1,1};
 static const GMColor C_BLACK = {0,0,0,1};
 
