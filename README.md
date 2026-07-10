@@ -4,10 +4,9 @@ A faithful C re-implementation of Nik Sudan's GameMaker 8.1 *Super Squat Simulat
 for **homebrew (CFW) Switch**, built on devkitA64 + libnx + switch-mesa (OpenGL via EGL).
 GameJolt is stripped and `gameMode` is forced to `2`, so it drops straight into play.
 
-This is a from-scratch port of the runtime, mirroring the Unity C# port 1:1 — same GM
+This is a from-scratch port of the runtime, mirroring the GameMaker project 1:1 — same GM
 semantics (60 Hz lockstep, room-space y-down, rotating view projection, alarm model,
-per-bar music randomization). It is **not** a repackaging of the Unity/C# build; libnx
-cannot run C#.
+per-bar music randomization).
 
 Controls: **D-pad Down = crouch, D-pad Up = stand** (each Up = +1 squat). **+ = quit.**
 
@@ -36,26 +35,10 @@ Produces `SuperSquatSim.nro`.
 Copy `SuperSquatSim.nro` to your SD card under `/switch/` and launch it from the
 homebrew menu (hbmenu) on Atmosphère/CFW.
 
+### 4. Make it work
+Download the game off gamejolt and put it next to the nro
+
 ---
-
-## Layout
-
-```
-Makefile              standard devkitPro switch template; ROMFS enabled,
-                      LIBS = -lglad -lEGL -lglapi -ldrm_nouveau -lnx -lm
-romfs/gfx/*.png       sprite strips (loaded at runtime via stb_image -> GL textures)
-romfs/sfx/*.raw       audio, pre-resampled to 48 kHz stereo s16 headerless PCM
-source/
-  gm.[ch]             RNG (xorshift), GM math, HSV, view + draw state, constants
-  gm_gl.[ch]          immediate-mode renderer over OpenGL core (VBO batcher + shader)
-  gm_assets.[ch]      texture + audio loading, sprite strip slicing, sound ids
-  gm_audio.[ch]       audout software mixer (threaded)
-  gm_object.[ch]      base object: motion, 12 alarms, registry, depth-sorted draw
-  objects.[ch]        the 8 objects (Shape, Par, PlayerTrail, Flash, Message,
-                      MusicControl, Player, Control)
-  main.c              EGL/GL init, romfs, world boot, 60 Hz vsync loop
-  stb_image.h         PNG loader (public domain)
-```
 
 ## Design notes / knobs
 
